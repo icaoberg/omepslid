@@ -102,6 +102,8 @@ DIR4_DELTAS = [(0,-1),(-1,0),(0,1),(1,0)]
 DIR8_DELTAS = [(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1)]
 ADD_DELTA = lambda (a,b): lambda (c,d): (a+c,b+d)
 
+TAG_ANNOTATIONS = dict()
+
 def get_args():
   """
   Parse the command line args using the argparse library.
@@ -262,14 +264,44 @@ def add_pixel_size(image, conn):
   pixels.setPhysicalSizeY(size)
   conn.getUpdateService().saveObject(pixels)
 
+def get_tag_annotation(name, conn):
+  """
+  Look for the tag with the given name. If multiple exist, ask the user which
+  one to choose and remember it for later.
+  """
+  if name in TAG_ANNOTATIONS:
+    return TAG_ANNOTATIONS[name]
+  else:
+    attributes = {"textValue": name}
+    matches = list(conn.getObjects("TagAnnotation", attributes=attributes))
+    if len(matches) == 0:
+      tag_annotation = omero.gateway.TagAnnotationWrapper(conn)
+      tag_annotation.setValue(name)
+      tag_annotation.save()
+    elif len(matches) == 1:
+      tag_annotation = matches[0]
+    else:
+      print()
+      print("  Found multiple tags with name '{}':".format(name))
+      tag_ids = map(lambda t: int(t.getId()), matches)
+      print("    {}".format(tag_ids))
+      prompt = "  Enter preferred tag ID:"
+      tag_annotation = None
+      while tag_annotation is None:
+        tag_id_input = prompt_for(prompt, str(tag_ids[0]))
+        if tag_id_input.isdigit() and int(tag_id_input) in tag_ids:
+          tag_annotation = matches[tag_ids.index(int(tag_id_input))]
+        else:
+          print("  IDs: {}".format(tag_ids))
+    TAG_ANNOTATIONS[name] = tag_annotation
+    return tag_annotation
+
 def add_tags(image, conn):
   """
   Add the 2D and HeLa tags to the image.
   """
   for tag_name in ['2D', 'HeLa']:
-    tag_annotation = omero.gateway.TagAnnotationWrapper(conn)
-    tag_annotation.setValue(tag_name)
-    tag_annotation.save()
+    tag_annotation = get_tag_annotation(tag_name, conn)
     image.linkAnnotation(tag_annotation)
 
 def add_metadata(image, marker, protein_name, conn):
