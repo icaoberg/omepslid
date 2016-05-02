@@ -12,9 +12,11 @@ Script for loading Murphy lab image collections into OMERO.servers.
 `$ brew install python`
 4. Install OMERO's version of [Ice](https://zeroc.com/products/ice) through homebrew with python bindings.  
 `$ brew install zeroc-ice35 --with-python`
-5. Install the required python packages: [numpy](http://www.numpy.org/), [Pillow](http://python-pillow.org/), [javabridge](https://pypi.python.org/pypi/javabridge), and [python-bioformats](https://pypi.python.org/pypi/python-bioformats).  
-`$ /usr/local/bin/pip install numpy Pillow javabridge python-bioformats`
-6. Download and unzip [OMERO.py](https://downloads.openmicroscopy.org/omero/5.2.2/#py) (link might not be latest version).
+5. Install [numpy](http://www.numpy.org/) (this must be installed first, at least before javabridge).  
+`$ /usr/local/bin/pip install numpy`
+6. Install the rest of the required python packages: [Pillow](http://python-pillow.org/), [javabridge](https://pypi.python.org/pypi/javabridge), and [python-bioformats](https://pypi.python.org/pypi/python-bioformats).  
+`$ /usr/local/bin/pip install Pillow javabridge python-bioformats`
+7. Download and unzip [OMERO.py](https://downloads.openmicroscopy.org/omero/5.2.2/#py) (link might not be latest version).
 
 ## Usage
 Before running any of the scripts, you need to set your `PYTHONPATH` environment variable to know about OMERO.py:  
