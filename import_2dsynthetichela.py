@@ -204,9 +204,9 @@ def get_i_from_other_tif(tif):
 
 def merge_image_channel_files(tif_name, infix):
   """
-  Given a path containing directories for each channel, grab the channel image
-  for image_name in each of the channels, and merge them into a single plane
-  generator which is returned.
+  Given the name of the tif being uploaded (not the cell or nucleus, but one of
+  the others with two indices), get the cell and nucleus image and merge them
+  with the tif being uploaded into a single plane generator which is returned.
 
   The plane generator should return an x-y plane of values for each z, channel,
   and time combination (in that order). In this case, we only have one z and
@@ -261,8 +261,9 @@ def add_channel_labels(image, protein_name):
 
 def add_key_value_pairs(conn, image):
   """
-  Add the key value pairs to the image. This consists of the marker used, as
-  well as Murphy Lab as the owner, and the data url.
+  Add the key value pairs to the image. This consists of the models used in
+  generating the differnet channels, as well as Murphy Lab as the owner, and
+  the data url.
   """
   map_annotation = omero.gateway.MapAnnotationWrapper(conn)
   map_annotation.setNs(omero.constants.metadata.NSCLIENTMAPANNOTATION)
