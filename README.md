@@ -79,6 +79,50 @@ optional arguments:
                         directory to save the images in (default: .)
 ```
 
+If downsampling is requested, the image is resized using bicubic interpolation to the nearest size that would result in downsampling less than or equal to the amount requested in each axis. For example, an 11x14 image with requested downsampling of 2 would be resized to 6x7, with a downsampling factor of 1.83 in the x dimension and 2 in the y dimension.
+
+Metadata such as resolution and PhysicalSize attributes are updated appropriately. In addition, metadata containing the details of the downsampling requested and performed is stored in the OME XML embedded metadata. Under the StructureAnnotations element, the following DoubleAnnotation elements are stored (with corresponding Description and Value sub-elements):
+
+| ID  | Description |
+| --- | ----------- |
+| Annotation:RequestedDownsamplingFactor | downsampling factor requested |
+| Annotation:XDownsamplingFactor | downsampling factor performed in the x dimension |
+| Annotation:YDownsamplingFactor | downsampling factor performed in the y dimension |
+| Annotation:OriginalPhysicalSizeX | original length of a pixel in the x dimension before downsampling (see the PhysicalSizeX attribute of the Pixels element) |
+| Annotation:OriginalPhysicalSizeY | original length of a pixel in the y dimension before downsampling (see the PhysicalSizeY attribute of the Pixels element) |
+
+Example OME XML might look like:
+```
+<OME ...>
+  <Image ...>
+    ...
+  </Image>
+  <StructuredAnnotations>
+    ...
+    <DoubleAnnotation ID="Annotation:RequestedDownsamplingFactor">
+      <Description>This element contains the requested downsampling factor the client passed to the OMERO server.</Description>
+      <Value>1.05</Value>
+    </DoubleAnnotation>
+    <DoubleAnnotation ID="Annotation:XDownsamplingFactor">
+      <Description>This is the amount by which the x dimension of the image was downsampled by the OMERO server.</Description>
+      <Value>1.0375</Value>
+    </DoubleAnnotation>
+    <DoubleAnnotation ID="Annotation:YDownsamplingFactor">
+      <Description>This is the amount by which the y dimension of the image was downsampled by the OMERO server.</Description>
+      <Value>1.03448275862</Value>
+    </DoubleAnnotation>
+    <DoubleAnnotation ID="Annotation:OriginalPhysicalSizeX">
+      <Description>This is the PhysicalSizeX attribute of the Pixels object before the downsampling was performed on the image.</Description>
+      <Value>0.049</Value>
+    </DoubleAnnotation>
+    <DoubleAnnotation ID="Annotation:OriginalPhysicalSizeY">
+      <Description>This is the PhysicalSizeY attribute of the Pixels object before the downsampling was performed on the image.</Description>
+      <Value>0.049</Value>
+    </DoubleAnnotation>
+  </StructuredAnnotations>
+</OME>
+```
+
 ## OMERO Webapp Installation
 1. On the OMERO server, install the needed dependencies.  
 `$ sudo apt-get install python-lxml`  
